@@ -1,0 +1,129 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.header img {
+    border-radius: 80%;
+    width: 150px;
+    height: 150px;
+    margin-right: 15px;
+}
+
+.header-info {
+    font-size: 16px;
+}
+
+.header-info h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.header-info p {
+    margin: 0;
+    color: #555;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 100px 10px 100px;
+    size: 100px;
+}
+
+.btn-group button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-group button:hover {
+    background-color: #0056b3;
+}
+
+.date-selector {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.date-selector div {
+    text-align: center;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.date-selector div:hover {
+    background-color: #ddd;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: none;
+    height: 80px;
+}
+
+.form-group input[type="file"] {
+    padding: 5px;
+}
+
+.submit-btn {
+    text-align: right;
+}
+
+.submit-btn button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.submit-btn button:hover {
+    background-color: #218838;
+}

@@ -1,0 +1,36 @@
+.scroll-container {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 100px;
+        padding: 10px;
+        white-space: nowrap;
+        width: 800; /* Show 4 boxes initially */
+        border-radius: 10px;
+        background: none;
+        scroll-behavior: smooth;
+    }
+
+    .scroll-container::-webkit-scrollbar {
+        display: none; /* Hide scrollbar */
+    }
+
+    .date-box {
+        flex: 0 0 100px;
+        height: 70px;
+        border: 1px solid black;
+        text-align: center;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        background: rgba(249, 249, 249, 0.92);
+        scroll-snap-align: center;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .date-box.active {
+        background: lightgreen;
+        transform: scale(1.1);
+    }

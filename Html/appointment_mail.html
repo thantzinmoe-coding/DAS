@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #28a745;
+        }
+        p {
+            font-size: 16px;
+        }
+        .details {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Appointment Confirmation</h2>
+        <p>Dear <strong>{{ patient_name }}</strong>,</p>
+        <p>Your appointment has been successfully booked. Here are the details:</p>
+        <div class="details">
+            <p><strong>Doctor:</strong> {{ doctor_name }}</p>
+            <p><strong>Hospital:</strong> {{ hospital_name }}</p>
+            <p><strong>Location:</strong> {{ hospital_location }}</p>
+            <p><strong>Symptoms:</strong> {{ symptoms }}</p>
+            <p><strong>Appointment Time:</strong> {{ appointment_time }}</p>
+            <p><strong>Token Number:</strong> {{ token_number }}</p>
+            <p><strong>Appointment Date:</strong> {{ appointment_date }}</p>
+        </div>
+        <p>Thank you for choosing our services.</p>
+        <p>Best regards,<br>Hospital Management Team</p>
+    </div>
+</body>
+</html>

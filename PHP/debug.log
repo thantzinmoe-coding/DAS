@@ -1,0 +1,17 @@
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: DELETE, Override: None, URL: /DAS/PHP/doctors.php?id=138
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: DELETE, Override: None, URL: /DAS/PHP/doctors.php?id=134
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: DELETE, Override: None, URL: /DAS/PHP/doctors.php?id=135
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: POST, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php
+Method: GET, Override: None, URL: /DAS/PHP/doctors.php

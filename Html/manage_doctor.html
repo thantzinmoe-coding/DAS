@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/notiflix@3/dist/notiflix-3.2.7.min.css" rel="stylesheet">
+    <style>
+        /* Back to Top Button Styling */
+        #back-to-top {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s;
+        }
+
+        #back-to-top:hover {
+            background-color: #0056b3;
+        }
+
+        /* Back to Previous Page Button Styling */
+        #back-to-prev {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">Doctor Management</h2>
+
+        <!-- Back to Previous Page Button -->
+        <button id="back-to-prev" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to System
+        </button>
+
+        <!-- Search and Add Doctor Button -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search doctors...">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDoctorModal">
+                    <i class="fas fa-plus"></i> Add New Doctor
+                </button>
+            </div>
+        </div>
+
+        <!-- Doctors Table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Specialization</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table rows will be dynamically populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add Doctor Modal -->
+        <div class="modal fade" id="addDoctorModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Doctor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addDoctorForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" name="password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Specialization (Job Type)</label>
+                                <input type="text" class="form-control" name="job_type" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Credentials</label>
+                                <input type="text" class="form-control" name="credential" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Gender</label>
+                                <select class="form-control" name="gender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Consultation Fee</label>
+                                <input type="number" step="0.01" class="form-control" name="consultation_fee" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile</label>
+                                <textarea class="form-control" name="profile" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                <input type="file" class="form-control" name="profile_image" accept="image/*" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Experience (Years)</label>
+                                <input type="number" class="form-control" name="experience" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="saveDoctorBtn">Save Doctor</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Doctor Modal -->
+        <div class="modal fade" id="editDoctorModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Doctor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editDoctorForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Specialization (Job Type)</label>
+                                <input type="text" class="form-control" name="job_type" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Credentials</label>
+                                <input type="text" class="form-control" name="credential" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Gender</label>
+                                <select class="form-control" name="gender" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Consultation Fee</label>
+                                <input type="number" step="0.01" class="form-control" name="consultation_fee" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile</label>
+                                <textarea class="form-control" name="profile" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                <input type="file" class="form-control" name="profile_image" accept="image/*">
+                                <small class="form-text text-muted">Leave blank to keep existing image</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Experience (Years)</label>
+                                <input type="number" class="form-control" name="experience" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="updateDoctorBtn">Update Doctor</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Top Button -->
+        <button id="back-to-top" title="Back to Top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notiflix@3/dist/notiflix-3.2.7.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize Notiflix
+            Notiflix.Notify.init({
+                width: '300px',
+                position: 'right-top',
+                timeout: 3000,
+            });
+
+            // Load doctors on page load
+            loadDoctors();
+
+            // Function to load doctors
+            function loadDoctors(searchTerm = '') {
+                $.ajax({
+                    url: '/DAS/PHP/doctors.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log('Load Doctors Response:', response);
+                        if (!Array.isArray(response)) {
+                            Notiflix.Notify.failure('Invalid response from server: ' + (response.error || 'Unknown error'));
+                            return;
+                        }
+                        let filtered = response.filter(doctor =>
+                            doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            doctor.job_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            doctor.email.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+                        let html = '';
+                        filtered.forEach(doctor => {
+                            html += `
+                            <tr>
+                                <td>${doctor.doctor_id}</td>
+                                <td><img src="/DAS/PHP/uploads/${doctor.profile_image}" alt="Doctor" class="rounded-circle" width="40" onerror="this.src='/DAS/uploads/default.jpg'"></td>
+                                <td>${doctor.name}</td>
+                                <td>${doctor.job_type}</td>
+                                <td>${doctor.email}</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info edit-doctor" data-id="${doctor.doctor_id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger delete-doctor" data-id="${doctor.doctor_id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        });
+                        $('tbody').html(html);
+                        if (searchTerm) {
+                            Notiflix.Notify.info(`Found ${filtered.length} matching doctors.`);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Load Doctors Error:', xhr.responseText);
+                        Notiflix.Notify.failure('Failed to load doctors: ' + error);
+                    }
+                });
+            }
+
+            // Add doctor
+            $('#saveDoctorBtn').click(function () {
+                let formData = new FormData($('#addDoctorForm')[0]);
+                if (!formData.get('profile_image').name) {
+                    Notiflix.Notify.failure('Please select a profile image.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/DAS/PHP/doctors.php',
+                    method: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log('Add Doctor Response:', response);
+                        if (response.success) {
+                            $('#addDoctorModal').modal('hide');
+                            loadDoctors();
+                            Notiflix.Notify.success('Doctor added successfully!');
+                            $('#addDoctorForm')[0].reset();
+                        } else {
+                            Notiflix.Notify.failure(response.error || 'Failed to add doctor.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Add Doctor Error:', xhr.responseText);
+                        Notiflix.Notify.failure('Failed to add doctor: ' + error);
+                    }
+                });
+            });
+
+            // Edit doctor
+            $(document).on('click', '.edit-doctor', function () {
+                let id = $(this).data('id');
+                $.ajax({
+                    url: '/DAS/PHP/doctors.php?id=' + id,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log('Edit Doctor Response:', response);
+                        if (!Array.isArray(response) || response.length === 0) {
+                            Notiflix.Notify.failure('Doctor not found.');
+                            return;
+                        }
+                        let doctor = response[0];
+                        $('#editDoctorModal input[name="name"]').val(doctor.name);
+                        $('#editDoctorModal input[name="email"]').val(doctor.email);
+                        $('#editDoctorModal input[name="job_type"]').val(doctor.job_type);
+                        $('#editDoctorModal input[name="credential"]').val(doctor.credential);
+                        $('#editDoctorModal select[name="gender"]').val(doctor.gender);
+                        $('#editDoctorModal input[name="consultation_fee"]').val(doctor.consultation_fee);
+                        $('#editDoctorModal textarea[name="profile"]').val(doctor.profile);
+                        $('#editDoctorModal input[name="experience"]').val(doctor.experience);
+                        $('#editDoctorModal').modal('show');
+
+                        $('#updateDoctorBtn').off('click').click(function () {
+                            let formData = new FormData($('#editDoctorForm')[0]);
+                            formData.append('doctor_id', id);
+
+                            $.ajax({
+                                url: '/DAS/PHP/doctors.php',
+                                method: 'POST',
+                                data: formData,
+                                contentType: false,
+                                processData: false,
+                                headers: { 'X-HTTP-Method-Override': 'PUT' },
+                                dataType: 'json',
+                                success: function (response) {
+                                    console.log('Update Doctor Response:', response);
+                                    if (response.success) {
+                                        $('#editDoctorModal').modal('hide');
+                                        loadDoctors();
+                                        Notiflix.Notify.success('Doctor updated successfully!');
+                                        $('#editDoctorForm')[0].reset();
+                                    } else {
+                                        Notiflix.Notify.failure(response.error || 'Failed to update doctor.');
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    console.log('Update Doctor Error:', xhr.responseText);
+                                    Notiflix.Notify.failure('Failed to update doctor: ' + error);
+                                }
+                            });
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Edit Doctor Error:', xhr.responseText);
+                        Notiflix.Notify.failure('Failed to fetch doctor details: ' + error);
+                    }
+                });
+            });
+
+            // Delete doctor
+            $(document).on('click', '.delete-doctor', function () {
+                let id = $(this).data('id');
+                Notiflix.Confirm.show(
+                    'Confirm Deletion',
+                    'Are you sure you want to delete this doctor?',
+                    'Yes',
+                    'No',
+                    function () {
+                        $.ajax({
+                            url: '/DAS/PHP/doctors.php?id=' + id,
+                            method: 'DELETE',
+                            dataType: 'json',
+                            success: function (response) {
+                                console.log('Delete Doctor Response:', response);
+                                if (response.success) {
+                                    loadDoctors();
+                                    Notiflix.Notify.success('Doctor deleted successfully!');
+                                } else {
+                                    Notiflix.Notify.failure(response.error || 'Failed to delete doctor.');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.log('Delete Doctor Error:', xhr.responseText);
+                                Notiflix.Notify.failure('Failed to delete doctor: ' + error);
+                            }
+                        });
+                    },
+                    function () {
+                        Notiflix.Notify.info('Deletion cancelled.');
+                    }
+                );
+            });
+
+            // Immediate Search Functionality
+            $('#searchInput').on('input', function () {
+                let searchTerm = $(this).val();
+                loadDoctors(searchTerm); // Call loadDoctors with the search term
+            });
+
+            // Back to Top Button Functionality
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 100) { // Show button after scrolling 100px
+                    $('#back-to-top').fadeIn();
+                } else {
+                    $('#back-to-top').fadeOut();
+                }
+            });
+
+            $('#back-to-top').click(function () {
+                $('html, body').animate({ scrollTop: 0 }, 500); // Smooth scroll to top
+                return false;
+            });
+
+            // Back to Previous Page Button Functionality
+            $('#back-to-prev').click(function () {
+                if (window.history.length > 1) {
+                    window.history.back(); // Go back to previous page
+                } else {
+                    Notiflix.Notify.info('No previous page available.');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

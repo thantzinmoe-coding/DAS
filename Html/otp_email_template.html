@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 350px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        h2 {
+            color: #333;
+            font-size: 22px;
+        }
+        .otp {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4CAF50;
+            background: #f3f3f3;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            letter-spacing: 5px;
+            margin: 15px 0;
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+        }
+        .footer {
+            font-size: 14px;
+            color: #777;
+            margin-top: 15px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>OTP Verification</h2>
+        <p>Your One-Time Password (OTP) for verification is:</p>
+        <div class="otp">{{ OTP }}</div>
+        <p>Please use this OTP to complete your authentication. This OTP is valid for a limited time.</p>
+        <div class="footer">
+            <p>If you didn’t request this, please ignore this email.</p>
+        </div>
+    </div>
+</body>
+</html>

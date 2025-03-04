@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@100..900&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Lexend Giga", serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    background: url('../../Image/undraw_building_burz.png') no-repeat;
+}
+
+nav {
+    position: relative;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    padding: 10px 10px;
+    box-sizing: border-box;
+}
+
+nav .logo {
+    padding: 22px 20px;
+    height: 80px;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #000000;
+}
+
+nav ul {
+    list-style: none;
+    float: right;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li a {
+    padding: 0px 10px;
+    margin: 0 30px;
+    line-height: 80px;
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: relative;
+}
+
+nav ul li a:hover {
+    color: #000000;
+    transition: all .5s;
+}
+
+nav ul li a::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background-color: rgb(0, 0, 0);
+    transition: all .5s;
+}
+
+nav ul li a:hover::before {
+    width: 100%;
+}
+
+.container {
+    display: flex;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.filters {
+    margin-top: 68px;
+    width: 25%;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 500px;
+}
+
+.filters h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.filters h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.filters label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.filters label input {
+    margin-right: 0.5rem;
+}
+
+.results {
+    width: 75%;
+}
+
+.results h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.job-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.job-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.job-card p {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.job-card .details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.job-card button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+.job-card button:hover {
+    background-color: #0056b3;
+}

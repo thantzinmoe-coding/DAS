@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File 1</title>
+</head>
+<body>
+    <h1>Form 1</h1>
+    <form id="form1">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <button type="button" onclick="sendDataFromFile1()">Send Data</button>
+    </form>
+
+    <script>
+        function sendDataFromFile1() {
+            const name = document.getElementById("name").value;
+
+            // Send data using Fetch API
+            fetch("process.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ source: "file1", name: name }),
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Response from PHP:", data);
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>

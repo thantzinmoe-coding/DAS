@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    async function rowCount(hospital_id, doctor_id) {
-        const response = await fetch(`/DAS/PHP/count_booking_row.php?hospital_id=${hospital_id}&doctor_id=${doctor_id}`);
+    async function rowCount(hospital_id, doctor_id, date) {
+        const response = await fetch(`/DAS/PHP/count_booking_row.php?hospital_id=${hospital_id}&doctor_id=${doctor_id}&date=${date}`);
         const data = await response.text();
         const jsonData = JSON.parse(data);
         return parseInt(jsonData.total);
@@ -30,18 +30,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Get doctorId from PHP output.
     var doctorId = document.getElementById("doctor_id").value;
     console.log(doctorId);
-
-    function getNextDateFromDay(dayStr) {
-        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-        const today = new Date();
-        let targetIndex = days.indexOf(dayStr.toUpperCase());
-        if (targetIndex === -1) return null;
-        let diff = targetIndex - today.getDay();
-        if (diff <= 0) diff += 7;
-        const result = new Date(today);
-        result.setDate(today.getDate() + diff);
-        return result;
-    }
 
     function fetchDates(hospitalId) {
         // Clear previous dates and times
@@ -57,9 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(book_date);
             let bookDayStr = book_date.map(date => date.toISOString().slice(0, 10));
             console.log(bookDayStr);
-
-            const row = await rowCount(hospitalId, doctorId);
-            console.log(row);
 
             if (isValidDate(book_date)) {
                 const response = await fetch(`/DAS/PHP/fetch_dates.php?hospital_id=${hospitalId}&doctor_id=${doctorId}`)
@@ -90,6 +75,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
 
                         if (jsonData.includes(dateStr) || jsonData.some(d => d.toLowerCase() === weekday.toLowerCase())) {
+                            const row = await rowCount(hospitalId, doctorId, dateStr);
+                            console.log(row);
                             if (!uniqueDays.has(dateStr) && !bookDayStr.includes(dateStr) || row < 5) {
                                 uniqueDays.add(dateStr);
                                 nextSevenDays.push({

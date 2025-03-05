@@ -31,23 +31,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Fetch available dates for a doctor
-    async function fetchDates(doctorId) {
+    async function fetchDates(doctor_id) {
         // Clear previous dates and times
         dateBox.innerHTML = '';
         timeBox.innerHTML = '';
+        console.log(doctor_id);
 
         try {
             // Fetch booked dates and row count
-            const [bookedDates, rowCount] = await Promise.all([
-                fetchBookedDates(doctorId),
-                getRowCount(hospitalId, doctorId),
+            const [bookedDates] = await Promise.all([
+                fetchBookedDates(doctor_id),
             ]);
 
             console.log("Booked Dates:", bookedDates);
-            console.log("Row Count:", rowCount);
 
             // Fetch available dates from the server
-            const response = await fetch(`/DAS/PHP/fetch_dates.php?hospital_id=${hospitalId}&doctor_id=${doctorId}`);
+            const response = await fetch(`/DAS/PHP/fetch_dates.php?hospital_id=${hospitalId}&doctor_id=${doctor_id}`);
             const data = await response.text();
             const jsonData = JSON.parse(data);
 
@@ -58,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Generate the next 7 available dates
-            const nextSevenDays = generateAvailableDates(jsonData, bookedDates, rowCount);
+            const nextSevenDays = await generateAvailableDates(jsonData, bookedDates, doctor_id);
             if (nextSevenDays.length === 0) {
                 console.error('No valid available days found');
                 messageBox.innerHTML = "<p style='color:red;'>No valid available days found.</p>";
@@ -66,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Render available dates
-            renderDates(nextSevenDays, doctorId);
+            renderDates(nextSevenDays, doctor_id);
         } catch (error) {
             console.error('Error fetching dates:', error);
             messageBox.innerHTML = "<p style='color:red;'>Something went wrong. Please try again.</p>";
@@ -74,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Generate available dates based on booked dates and row count
-    function generateAvailableDates(availableData, bookedDates, rowCount) {
+    async function generateAvailableDates(availableData, bookedDates, doctorId) {
         const today = new Date();
         const uniqueDays = new Set();
         const nextSevenDays = [];
@@ -89,6 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 availableData.includes(dateStr) ||
                 availableData.some(d => d.toLowerCase() === weekday.toLowerCase())
             ) {
+                const rowCount = await getRowCount(hospitalId, doctorId, dateStr);
+                console.log(rowCount);
                 if (
                     !uniqueDays.has(dateStr) &&
                     (!bookedDates.includes(dateStr) || rowCount < 5)
@@ -229,8 +230,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return data.available_dates || [];
     }
 
-    async function getRowCount(hospitalId, doctorId) {
-        const response = await fetch(`/DAS/PHP/count_booking_row.php?hospital_id=${hospitalId}&doctor_id=${doctorId}`);
+    async function getRowCount(hospitalId, doctorId, date) {
+        const response = await fetch(`/DAS/PHP/count_booking_row.php?hospital_id=${hospitalId}&doctor_id=${doctorId}&date=${date}`);
         const data = await response.json();
         return parseInt(data.total) || 0;
     }

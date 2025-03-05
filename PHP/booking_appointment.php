@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = $stmt->get_result();
     $overlap = $result->fetch_row()[0];
 
-    if ($overlap > 0) {
+    if ($overlap > 5) {
         echo json_encode(["error" => "This time slot is already booked."]);
         $stmt->close();
         $conn->close();

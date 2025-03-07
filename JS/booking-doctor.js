@@ -27,6 +27,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return parseInt(jsonData.total);
     }
 
+    async function getUserRowCount(hospital_id, doctor_id, date){
+        const response = await fetch(`/DAS/PHP/get_booked_row_with_email.php?hospital_id=${hospital_id}&doctor_id=${doctor_id}&date=${date}`);
+        const data = await response.text();
+        console.log(data);
+        const jsonData = JSON.parse(data);
+        return parseInt(jsonData.total);
+    }
+
     // Get doctorId from PHP output.
     var doctorId = document.getElementById("doctor_id").value;
     console.log(doctorId);
@@ -76,8 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         if (jsonData.includes(dateStr) || jsonData.some(d => d.toLowerCase() === weekday.toLowerCase())) {
                             const row = await rowCount(hospitalId, doctorId, dateStr);
+                            const userRow = await getUserRowCount(hospitalId, doctorId, dateStr);
                             console.log(row);
-                            if (!uniqueDays.has(dateStr) && !bookDayStr.includes(dateStr) || row < 5) {
+                            if (!uniqueDays.has(dateStr) && !bookDayStr.includes(dateStr) || row < 5 && userRow < 1) {
                                 uniqueDays.add(dateStr);
                                 nextSevenDays.push({
                                     date: dateStr,

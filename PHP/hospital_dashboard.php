@@ -27,7 +27,7 @@ $totalDoctors = $totalDoctorsResult['total_doctors'];
 // Fetch doctors for this hospital
 $doctorQuery = '
    SELECT dh.id, d.doctor_id, d.name, d.job_type, dh.available_day, dh.available_time,
-       (SELECT COUNT(*) FROM booking WHERE booking.doctor_id = d.doctor_id) AS total_appointments
+       (SELECT COUNT(*) FROM booking WHERE booking.doctor_id = d.doctor_id AND booking.hospital_id = dh.hospital_id) AS total_appointments
 FROM doctor_hospital dh
 JOIN doctors d ON dh.doctor_id = d.doctor_id
 WHERE dh.hospital_id = ?';
@@ -245,7 +245,7 @@ $totalEmergencies = $totalEmergenciesResult['total_emergencies'];
     const beepSound = document.getElementById("emergencyBeep");
 
     function checkEmergencyRequests() {
-        fetch('check_hospital_emergency.php?hospital_id=' + hospitalId)
+        fetch('/DAS/PHP/check_hospital_emergency.php?hospital_id=' + hospitalId)
             .then(response => response.json())
             .then(data => {
                 const currentCount = data.total;
@@ -294,7 +294,7 @@ $totalEmergencies = $totalEmergenciesResult['total_emergencies'];
             }
 
             try {
-                const response = await fetch('mark_emergency_done.php', {
+                const response = await fetch('/DAS/PHP/mark_emergency_done.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

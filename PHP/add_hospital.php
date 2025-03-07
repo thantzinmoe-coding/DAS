@@ -17,40 +17,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_hospital'])) {
     $contact = $conn->real_escape_string($_POST['contact']);
     $rating = isset($_POST['rating']) ? floatval($_POST['rating']) : null;
     $emergency_services = isset($_POST['emergency_services']) ? intval($_POST['emergency_services']) : 0;
-    $uploadDir = 'uploads/';
+
+    // Define upload directory relative to the current script's location
+    $uploadDir = __DIR__ . '/uploads/';  // e.g., /var/www/html/DAS/PHP/uploads/
+    $uploadUrl = '/DAS/PHP/uploads/';    // URL path for web access
+    $message = '';
 
     // Check if the upload directory exists, if not create it
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    $filename = time() . '_' . basename($_FILES['profile_image']['name']);
-    $targetFile = $uploadDir . $filename;
-
-    if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetFile)) {
-        // Save just the filename in the database
-        if ($id) {
-            $sql = "UPDATE hospitals SET name='$name', location='$location', specialty='$specialty', contact='$contact', rating='$rating', emergency_services='$emergency_services' WHERE hospital_id=$id";
-            $message = ($conn->query($sql) === TRUE) ? '✅ Hospital updated successfully!' : '❌ Error: ' . $conn->error;
-        } else {
-            $sql = "INSERT INTO hospitals (name, location, specialty, contact, rating, emergency_services, profile_image) VALUES ('$name', '$location', '$specialty', '$contact', '$rating', '$emergency_services', '$filename')";
-            $message = ($conn->query($sql) === TRUE) ? '✅ Hospital added successfully!' : '❌ Error: ' . $conn->error;
+        if (!mkdir($uploadDir, 0755, true)) {
+            $message = '❌ Failed to create upload directory.';
+            goto end_processing;
         }
     }
 
-    // **Prevent duplicate submission on refresh**
-    header('Location: /DAS/adminDashboard-system');
+    // Check if a file was uploaded
+    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['profile_image']['tmp_name'];
+        $fileName = $_FILES['profile_image']['name'];
+        $fileType = mime_content_type($fileTmpPath);
+
+        // Validate that it's an image
+        if (strpos($fileType, 'image/') !== 0) {
+            $message = '❌ Only image files are allowed.';
+            goto end_processing;
+        }
+
+        $filename = time() . '_' . basename($fileName);
+        $targetFile = $uploadDir . $filename;
+
+        // Move the uploaded file
+        if (move_uploaded_file($fileTmpPath, $targetFile)) {
+            // Use prepared statements to prevent SQL injection
+            if ($id) {
+                $sql = "UPDATE hospitals SET name=?, location=?, specialty=?, contact=?, rating=?, emergency_services=? WHERE hospital_id=?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssssdii", $name, $location, $specialty, $contact, $rating, $emergency_services, $id);
+                $message = $stmt->execute() ? '✅ Hospital updated successfully!' : '❌ Error: ' . $conn->error;
+            } else {
+                $sql = "INSERT INTO hospitals (name, location, specialty, contact, rating, emergency_services, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssssdis", $name, $location, $specialty, $contact, $rating, $emergency_services, $filename);
+                $message = $stmt->execute() ? '✅ Hospital added successfully!' : '❌ Error: ' . $conn->error;
+            }
+        } else {
+            $message = '❌ Failed to upload the file. Check directory permissions.';
+        }
+    } else {
+        $message = '❌ No file uploaded or upload error occurred: ' . ($_FILES['profile_image']['error'] ?? 'Unknown');
+    }
+
+    end_processing:
+    // Prevent duplicate submission on refresh
+    header('Location: /DAS/manage-hospitals');
     exit();
 }
 
 // Handle Delete
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $sql = "DELETE FROM hospitals WHERE hospital_id=$id";
-    $message = ($conn->query($sql) === TRUE) ? '✅ Hospital deleted successfully!' : '❌ Error: ' . $conn->error;
+    $sql = "DELETE FROM hospitals WHERE hospital_id=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+    $message = $stmt->execute() ? '✅ Hospital deleted successfully!' : '❌ Error: ' . $conn->error;
 
-    // **Prevent duplicate deletion on refresh**
-    header('Location: /DAS/adminDashboard-system');
+    // Prevent duplicate deletion on refresh
+    header('Location: /DAS/manage-hospitals');
     exit();
 }
 
@@ -70,47 +102,34 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        /* Your existing styles remain unchanged */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
         }
-
         .container {
             max-width: 1000px;
             margin-top: 20px;
         }
-
         .card {
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
-
         .table thead {
             background: #007bff;
             color: white;
         }
-
         .btn-action {
             display: flex;
             gap: 10px;
         }
-
         .fade-in {
             animation: fadeIn 1s ease-in-out;
         }
-
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
         .dashboard-header {
             display: flex;
             justify-content: space-between;
@@ -120,7 +139,6 @@ $conn->close();
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
         .dashboard-title {
             color: #2c3e50;
             font-size: 1.75rem;
@@ -129,18 +147,15 @@ $conn->close();
             display: flex;
             align-items: center;
         }
-
         .icon-hospital {
             margin-right: 0.75rem;
             font-size: 2rem;
         }
-
         .dashboard-stats {
             display: flex;
             align-items: center;
             gap: 1.5rem;
         }
-
         .hospital-count {
             padding: 0.75rem 1.25rem;
             font-size: 1.1rem;
@@ -149,12 +164,10 @@ $conn->close();
             color: white;
             font-weight: 500;
         }
-
         .hospital-count strong {
             font-weight: 700;
             margin-left: 0.25rem;
         }
-
         .btn-back {
             background-color: #6c757d;
             border: none;
@@ -167,18 +180,15 @@ $conn->close();
             display: flex;
             align-items: center;
         }
-
         .btn-back:hover {
             background-color: #5a6268;
             color: #fff;
             transform: translateX(-2px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-
         .btn-back .fas {
             transition: transform 0.3s ease;
         }
-
         .btn-back:hover .fas {
             transform: translateX(-4px);
         }
@@ -206,7 +216,7 @@ $conn->close();
 
         <div class="card p-4">
             <h4 class="mb-3">Add / Edit Hospital</h4>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="id" name="id">
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -238,7 +248,7 @@ $conn->close();
                     </div>
                     <div class="col-md-12">
                         <label class="form-label">Hospital Profile Image:</label>
-                        <input type="file" name="profile_image" class="form-control" required>
+                        <input type="file" name="profile_image" class="form-control" accept="image/*" required>
                     </div>
                 </div>
                 <button type="submit" name="submit_hospital" class="btn btn-success mt-3 w-100">Save Hospital</button>

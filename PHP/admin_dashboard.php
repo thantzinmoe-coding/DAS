@@ -17,12 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_hospital'])) {
     $contact = $conn->real_escape_string($_POST['contact']);
     $rating = isset($_POST['rating']) ? floatval($_POST['rating']) : null;
     $emergency_services = isset($_POST['emergency_services']) ? intval($_POST['emergency_services']) : 0;
+    $profile_image = isset($_POST['profile_image']) ? $_POST['profile_image'] : "";
 
     if ($id) {
         $sql = "UPDATE hospitals SET name='$name', location='$location', specialty='$specialty', contact='$contact', rating='$rating', emergency_services='$emergency_services' WHERE hospital_id=$id";
         $message = ($conn->query($sql) === TRUE) ? '✅ Hospital updated successfully!' : '❌ Error: ' . $conn->error;
     } else {
-        $sql = "INSERT INTO hospitals (name, location, specialty, contact, rating, emergency_services) VALUES ('$name', '$location', '$specialty', '$contact', '$rating', '$emergency_services')";
+        $sql = "INSERT INTO hospitals (name, location, specialty, contact, rating, emergency_services, profile_image) VALUES ('$name', '$location', '$specialty', '$contact', '$rating', '$emergency_services', '$profile_image')";
         $message = ($conn->query($sql) === TRUE) ? '✅ Hospital added successfully!' : '❌ Error: ' . $conn->error;
     }
 

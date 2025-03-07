@@ -194,33 +194,35 @@ session_start();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Function to fetch patient history
             const doctor_id = document.getElementById('doctor_id_form').querySelector('input[name="doctor_id"]').value;
-            console.log(doctor_id);
             const form = new FormData();
             form.append('doctor_id', doctor_id);
 
             function fetchHistory() {
                 fetch('/DAS/PHP/fetch_history.php', {
                         method: 'POST',
-                        body: form // Use 'body' instead of 'data'
+                        body: form
                     })
                     .then(response => response.text())
                     .then(data => {
                         document.querySelector('#patientRecords tbody').innerHTML = data;
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => console.error('Error fetching history:', error));
             }
 
-            // Initial fetch when the page loads
-            fetchHistory();
+            // Event delegation for "Done" buttons
+            document.querySelector('#appointments-tbody').addEventListener('click', function(event) {
+                const button = event.target.closest('.done-btn');
+                if (button) {
+                    console.log('Done button clicked');
+                    const row = button.closest('tr');
+                    const id = row.getAttribute('data-id');
+                    console.log('Appointment ID:', id);
 
-            // Attach event listener to all "done" buttons
-            document.querySelectorAll('.done-btn').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    var row = this.closest('tr');
-                    var id = row.getAttribute('data-id');
-                    console.log(id);
+                    if (!id) {
+                        console.error('No data-id found on row');
+                        return;
+                    }
 
                     fetch('/DAS/PHP/make_history.php', {
                             method: 'POST',
@@ -233,33 +235,33 @@ session_start();
                         })
                         .then(response => response.text())
                         .then(data => {
-                            console.log(data);
-                            const jsonData = JSON.parse(data);
-                            if (jsonData.status === 'success') {
-                                row.remove();
-                                fetchHistory(); // Refresh history after success
-                            } else {
-                                console.error('Error:', jsonData);
+                            console.log('Make history response:', data);
+                            try {
+                                const jsonData = JSON.parse(data);
+                                if (jsonData.status === 'success') {
+                                    row.remove();
+                                    fetchHistory();
+                                } else {
+                                    console.error('Error from server:', jsonData);
+                                }
+                            } catch (e) {
+                                console.error('Invalid JSON response:', data, e);
                             }
                         })
-                        .catch(error => console.error('Error:', error));
-                });
+                        .catch(error => console.error('Error in fetch:', error));
+                }
             });
 
-            // Attach event listener to all "view" buttons
+            // "View" button logic
             document.querySelectorAll('.view-btn').forEach(function(button) {
                 button.addEventListener('click', function() {
-                    var row = this.closest('tr');
-                    var hospitalId = row.getAttribute('data-hospital_id');
-                    var doctor_id = document.getElementById('doctor_id_form').querySelector('input[name="doctor_id"]').value;
-                    console.log(hospitalId);
-                    console.log(doctor_id);
+                    const row = this.closest('tr');
+                    const hospitalId = row.getAttribute('data-hospital_id');
+                    const doctor_id = document.getElementById('doctor_id_form').querySelector('input[name="doctor_id"]').value;
 
-                    // Create a new FormData object for each request
                     const form = new FormData();
                     form.append('hospital_id', hospitalId);
                     form.append('doctor_id', doctor_id);
-                    // Note: doctor_id isn't provided here - you'll need to add it if required
 
                     fetch('/DAS/PHP/fetch_appointments.php', {
                             method: 'POST',
@@ -267,12 +269,17 @@ session_start();
                         })
                         .then(response => response.text())
                         .then(data => {
+                            console.log('Fetched appointments HTML:', data);
                             document.querySelector('#appointments-tbody').innerHTML = data;
                         })
-                        .catch(error => console.error('Error:', error));
+                        .catch(error => console.error('Error fetching appointments:', error));
                 });
             });
 
+            // Initial fetch
+            fetchHistory();
+
+            // Logout button logic (unchanged)
             document.getElementById('logout-btn').addEventListener('click', function() {
                 Notiflix.Confirm.show(
                     'Confirm Logout',

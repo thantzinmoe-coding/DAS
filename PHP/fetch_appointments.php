@@ -9,7 +9,6 @@ $doctor_id = $_POST['doctor_id'] ?? null;
 if ($hospital_id === null) {
     die("Error: hospital_id is required");
 }
-// Commenting out doctor_id check since it's not sent in JS yet
 if ($doctor_id === null) {
     die("Error: doctor_id is required");
 }
@@ -24,7 +23,7 @@ if (empty($appointments)) {
     echo "<tr><td colspan='3'>No appointments found</td></tr>";
 } else {
     foreach ($appointments as $appointment) {
-        echo "<tr>";
+        echo "<tr data-id='" . htmlspecialchars($appointment['id']) . "'>";
         echo "<td class='text-start'>" . htmlspecialchars($appointment['patient_name']) . "</td>";
         echo "<td class='text-start'>" . htmlspecialchars($appointment['appointment_start_time']) . " - " . htmlspecialchars($appointment['appointment_end_time']) . "</td>";
         echo "<td class='text-start'>

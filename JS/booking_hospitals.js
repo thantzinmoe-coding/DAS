@@ -89,10 +89,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 availableData.some(d => d.toLowerCase() === weekday.toLowerCase())
             ) {
                 const rowCount = await getRowCount(hospitalId, doctorId, dateStr);
+                const userRowCount = await getUserRowCount(hospitalId, doctorId, dateStr);
                 console.log(rowCount);
                 if (
                     !uniqueDays.has(dateStr) &&
-                    (!bookedDates.includes(dateStr) || rowCount < 5)
+                    (!bookedDates.includes(dateStr) || rowCount < 5 && userRowCount < 1)
                 ) {
                     uniqueDays.add(dateStr);
                     nextSevenDays.push({ date: dateStr, d: tempDate });
@@ -234,5 +235,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const response = await fetch(`/DAS/PHP/count_booking_row.php?hospital_id=${hospitalId}&doctor_id=${doctorId}&date=${date}`);
         const data = await response.json();
         return parseInt(data.total) || 0;
+    }
+
+    async function getUserRowCount(hospital_id, doctor_id, date) {
+        const response = await fetch(`/DAS/PHP/get_booked_row_with_email.php?hospital_id=${hospital_id}&doctor_id=${doctor_id}&date=${date}`);
+        const data = await response.text();
+        console.log(data);
+        const jsonData = JSON.parse(data);
+        return parseInt(jsonData.total);
     }
 });
